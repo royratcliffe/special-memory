@@ -26,3 +26,44 @@ jobs:
         with:
           release: ${{ matrix.gcc }}
       - run: arm-none-eabi-gcc --version
+
+  first-job:
+    steps:
+     - name: Prepare Renode settings
+       run: |
+         echo "RENODE_VERSION=latest" >> $GITHUB_ENV
+         echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
+
+     - name: Download Renode
+       uses: antmicro/renode-test-action@v3.0.0
+       with:
+        renode-version: '${{ env.RENODE_VERSION }}'
+        renode-run-path: '${{ env.RENODE_RUN_DIR }}'
+
+     - name: Cache Renode installation
+       uses: actions/cache@v2
+       id: cache-renode
+       with:
+         path: '${{ env.RENODE_RUN_DIR }}'
+         key: cache-renode-${{ env.RENODE_VERSION }}
+
+  second-job:
+    steps:
+     - name: Prepare Renode settings
+       run: |
+         echo "RENODE_VERSION=latest" >> $GITHUB_ENV
+         echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
+
+     - name: Restore Renode
+       uses: actions/cache@v2
+       id: cache-renode
+       with:
+         path: '${{ env.RENODE_RUN_DIR }}'
+         key: cfu-cache-renode-${{ env.RENODE_VERSION }}
+
+     - name: Run tests
+       uses: antmicro/renode-test-action@v3.0.0
+       with:
+         renode-version: '${{ env.RENODE_VERSION }}'
+         tests-to-run: tests-*.robot
+         renode-run-path: '${{ env.RENODE_RUN_DIR }}'

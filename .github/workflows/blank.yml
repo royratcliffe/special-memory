@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gcc: ['7-2017-q4', 'latest']
+        gcc: ['10.3-2021.10', 'latest']
     steps:
       - name: Install GNU Arm Embedded Toolchain - ${{ matrix.gcc }}
         uses: carlosperate/arm-none-eabi-gcc-action@v1
